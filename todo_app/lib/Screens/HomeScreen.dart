@@ -18,6 +18,10 @@ class _HomeScreenState extends State<HomeScreen> {
   int workDone = 0;
   List<Todo> todoList = [];
   bool isLoading = true;
+  final colorList = <Color>[
+    const Color(0xFF001133),
+    const Color(0xFFeeb714),
+  ];
   void fetchData() async {
     try {
       http.Response response = await http.get(Uri.parse(api));
@@ -39,6 +43,18 @@ class _HomeScreenState extends State<HomeScreen> {
       setState(() {
         isLoading = false;
       });
+    } catch (e) {
+      print("Error is $e");
+    }
+  }
+
+  void DeleteATodo(String id) async {
+    try {
+      http.Response response = await http.delete(Uri.parse(api + id));
+      setState(() {
+        todoList = [];
+      });
+      fetchData();
     } catch (e) {
       print("Error is $e");
     }
@@ -69,10 +85,17 @@ class _HomeScreenState extends State<HomeScreen> {
                   )
                 : Column(
                     children: [
-                      PieChart(dataMap: {
-                        "Done": workDone.toDouble(),
-                        "Incomplete": (todoList.length - workDone).toDouble()
-                      }),
+                      PieChart(
+                        dataMap: {
+                          "Complete": workDone.toDouble(),
+                          "Incomplete": (todoList.length - workDone).toDouble()
+                        },
+                        colorList: colorList,
+                        legendOptions: const LegendOptions(
+                          legendTextStyle:
+                              TextStyle(color: Colors.white, fontSize: 16),
+                        ),
+                      ),
                       Column(
                         children: todoList.map((e) {
                           return TodoContainer(
@@ -80,6 +103,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             title: e.title,
                             desc: e.desc,
                             isDone: e.isDone,
+                            onPressDelete: () => DeleteATodo(e.id.toString()),
                           );
                         }).toList(),
                       ),
@@ -87,6 +111,25 @@ class _HomeScreenState extends State<HomeScreen> {
                   )
           ],
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          showModalBottomSheet(
+            context: context,
+            builder: (BuildContext context) {
+              return Container(
+                height: MediaQuery.of(context).size.height / 2,
+                color: const Color(0xFF405173),
+                child: Column(),
+              );
+            },
+          );
+        },
+        child: const Icon(
+          Icons.add,
+          color: Colors.white,
+        ),
+        backgroundColor: const Color(0xFF405173),
       ),
     );
   }
