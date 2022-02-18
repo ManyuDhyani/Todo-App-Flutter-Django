@@ -3,7 +3,7 @@ import 'package:todo_app/Constants/ApiUrl.dart';
 import 'package:todo_app/Models/todoData.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
+import 'package:pie_chart/pie_chart.dart';
 import 'package:todo_app/Widgets/AppBar.dart';
 import 'package:todo_app/Widgets/TodoContainer.dart';
 
@@ -15,6 +15,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  int workDone = 0;
   List<Todo> todoList = [];
   bool isLoading = true;
   void fetchData() async {
@@ -29,6 +30,9 @@ class _HomeScreenState extends State<HomeScreen> {
           isDone: todo['isDone'],
           date: todo['date'],
         );
+        if (todo['isDone']) {
+          workDone += 1;
+        }
         todoList.add(i);
       });
       //print(todoList.length);
@@ -51,18 +55,29 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFF405173),
       appBar: customAppBar(),
-      body: isLoading
-          ? CircularProgressIndicator()
-          : ListView(
-              children: todoList.map((e) {
-                return TodoContainer(
-                  id: e.id,
-                  title: e.title,
-                  desc: e.desc,
-                  isDone: e.isDone,
-                );
-              }).toList(),
-            ),
+      body: SingleChildScrollView(
+        scrollDirection: Axis.vertical,
+        child: Column(
+          children: [
+            PieChart(dataMap: {
+              "Done": workDone.toDouble(),
+              "Incomplete": (todoList.length - workDone).toDouble()
+            }),
+            isLoading
+                ? CircularProgressIndicator()
+                : Column(
+                    children: todoList.map((e) {
+                      return TodoContainer(
+                        id: e.id,
+                        title: e.title,
+                        desc: e.desc,
+                        isDone: e.isDone,
+                      );
+                    }).toList(),
+                  ),
+          ],
+        ),
+      ),
     );
   }
 }
