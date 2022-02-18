@@ -19,8 +19,8 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Todo> todoList = [];
   bool isLoading = true;
   final colorList = <Color>[
-    Color(0xFF03155B),
-    Color(0xFFeeb714),
+    const Color(0xFF001133),
+    const Color(0xFFeeb714),
   ];
   void fetchData() async {
     try {
@@ -91,6 +91,10 @@ class _HomeScreenState extends State<HomeScreen> {
                           "Incomplete": (todoList.length - workDone).toDouble()
                         },
                         colorList: colorList,
+                        legendOptions: const LegendOptions(
+                          legendTextStyle:
+                              TextStyle(color: Colors.white, fontSize: 16),
+                        ),
                       ),
                       Column(
                         children: todoList.map((e) {
@@ -107,6 +111,25 @@ class _HomeScreenState extends State<HomeScreen> {
                   )
           ],
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          showModalBottomSheet(
+            context: context,
+            builder: (BuildContext context) {
+              return Container(
+                height: MediaQuery.of(context).size.height / 2,
+                color: const Color(0xFF405173),
+                child: Column(),
+              );
+            },
+          );
+        },
+        child: const Icon(
+          Icons.add,
+          color: Colors.white,
+        ),
+        backgroundColor: const Color(0xFF405173),
       ),
     );
   }
