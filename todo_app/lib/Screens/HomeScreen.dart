@@ -20,6 +20,8 @@ class _HomeScreenState extends State<HomeScreen> {
   bool isLoading = true;
 
   void _showModal() {
+    String title = "";
+    String desc = "";
     showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
@@ -38,7 +40,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: TextFormField(
+                child: TextField(
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(
                       borderSide: BorderSide(
@@ -48,11 +50,16 @@ class _HomeScreenState extends State<HomeScreen> {
                     labelText: "Task",
                     labelStyle: TextStyle(fontSize: 18.0, color: Colors.white),
                   ),
+                  onSubmitted: (value) {
+                    setState(() {
+                      title = value;
+                    });
+                  },
                 ),
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: TextFormField(
+                child: TextField(
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(
                       borderSide: BorderSide(
@@ -65,10 +72,15 @@ class _HomeScreenState extends State<HomeScreen> {
                     //   hintStyle:
                     //       TextStyle(fontSize: 18.0, color: Colors.white),
                   ),
+                  onSubmitted: (value) {
+                    setState(() {
+                      desc = value;
+                    });
+                  },
                 ),
               ),
               ElevatedButton(
-                onPressed: null,
+                onPressed: () => _postData(title: title, desc: desc),
                 child: const Text(
                   "Add",
                   style: TextStyle(color: Colors.white),
@@ -88,6 +100,7 @@ class _HomeScreenState extends State<HomeScreen> {
     const Color(0xFF001133),
     const Color(0xFFeeb714),
   ];
+
   void fetchData() async {
     try {
       http.Response response = await http.get(Uri.parse(api));
@@ -109,6 +122,29 @@ class _HomeScreenState extends State<HomeScreen> {
       setState(() {
         isLoading = false;
       });
+    } catch (e) {
+      print("Error is $e");
+    }
+  }
+
+  void _postData({String title = "", String desc = ""}) async {
+    try {
+      http.Response response = await http.post(
+        Uri.parse(api),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(
+            <String, dynamic>{"title": title, "desc": desc, "isDone": false}),
+      );
+      if (response.statusCode == 201) {
+        setState(() {
+          todoList = [];
+        });
+        fetchData();
+      } else {
+        print("Something went wrong");
+      }
     } catch (e) {
       print("Error is $e");
     }
