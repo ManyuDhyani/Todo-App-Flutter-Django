@@ -5,12 +5,14 @@ class TodoContainer extends StatelessWidget {
   final String title;
   final String desc;
   final bool isDone;
+  final Function onPressDelete;
   const TodoContainer({
     Key? key,
     required this.id,
     required this.title,
     required this.desc,
     required this.isDone,
+    required this.onPressDelete,
   }) : super(key: key);
 
   @override
@@ -53,7 +55,7 @@ class TodoContainer extends StatelessWidget {
                   //   ),
                   // ),
                   IconButton(
-                      onPressed: () => {},
+                      onPressed: () => onPressDelete(),
                       icon: const Icon(
                         Icons.delete_forever_outlined,
                         color: Colors.white,
