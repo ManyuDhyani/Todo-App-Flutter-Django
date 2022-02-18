@@ -1,8 +1,11 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:todo_app/Constants/ApiUrl.dart';
 import 'package:todo_app/Models/todoData.dart';
 import 'package:http/http.dart' as http;
+import 'dart:convert';
+
+import 'package:todo_app/Widgets/AppBar.dart';
+import 'package:todo_app/Widgets/TodoContainer.dart';
 
 class HomeScreen extends StatefulWidget {
   HomeScreen({Key? key}) : super(key: key);
@@ -13,11 +16,12 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   List<Todo> todoList = [];
+  bool isLoading = true;
   void fetchData() async {
     try {
       http.Response response = await http.get(Uri.parse(api));
       var data = json.decode(response.body);
-      data.foreach((todo) {
+      data.forEach((todo) {
         Todo i = Todo(
           id: todo['id'],
           title: todo['title'],
@@ -27,7 +31,10 @@ class _HomeScreenState extends State<HomeScreen> {
         );
         todoList.add(i);
       });
-      print(todoList.length);
+      //print(todoList.length);
+      setState(() {
+        isLoading = false;
+      });
     } catch (e) {
       print("Error is $e");
     }
@@ -42,7 +49,20 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      backgroundColor: const Color(0xFF405173),
+      appBar: customAppBar(),
+      body: isLoading
+          ? CircularProgressIndicator()
+          : ListView(
+              children: todoList.map((e) {
+                return TodoContainer(
+                  id: e.id,
+                  title: e.title,
+                  desc: e.desc,
+                  isDone: e.isDone,
+                );
+              }).toList(),
+            ),
     );
   }
 }
