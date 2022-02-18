@@ -59,22 +59,32 @@ class _HomeScreenState extends State<HomeScreen> {
         scrollDirection: Axis.vertical,
         child: Column(
           children: [
-            PieChart(dataMap: {
-              "Done": workDone.toDouble(),
-              "Incomplete": (todoList.length - workDone).toDouble()
-            }),
             isLoading
-                ? CircularProgressIndicator()
+                ? Container(
+                    padding: EdgeInsets.all(10),
+                    // FOR bring the circle to center comment out padding and use below lines
+                    // width: MediaQuery.of(context).size.width,
+                    // height: MediaQuery.of(context).size.height,
+                    child: Center(child: CircularProgressIndicator()),
+                  )
                 : Column(
-                    children: todoList.map((e) {
-                      return TodoContainer(
-                        id: e.id,
-                        title: e.title,
-                        desc: e.desc,
-                        isDone: e.isDone,
-                      );
-                    }).toList(),
-                  ),
+                    children: [
+                      PieChart(dataMap: {
+                        "Done": workDone.toDouble(),
+                        "Incomplete": (todoList.length - workDone).toDouble()
+                      }),
+                      Column(
+                        children: todoList.map((e) {
+                          return TodoContainer(
+                            id: e.id,
+                            title: e.title,
+                            desc: e.desc,
+                            isDone: e.isDone,
+                          );
+                        }).toList(),
+                      ),
+                    ],
+                  )
           ],
         ),
       ),
