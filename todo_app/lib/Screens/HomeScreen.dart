@@ -18,6 +18,72 @@ class _HomeScreenState extends State<HomeScreen> {
   int workDone = 0;
   List<Todo> todoList = [];
   bool isLoading = true;
+
+  void _showModal() {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          height: MediaQuery.of(context).size.height / 2,
+          color: const Color(0xFF405173),
+          child: Column(
+            children: [
+              const Text(
+                "Add your Todo Task",
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFFFFFFFF),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextFormField(
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Color(0xFF001133),
+                      ),
+                    ),
+                    labelText: "Task",
+                    labelStyle: TextStyle(fontSize: 18.0, color: Colors.white),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextFormField(
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Color(0xFF001133),
+                      ),
+                    ),
+                    labelText: "Description",
+                    labelStyle: TextStyle(fontSize: 18.0, color: Colors.white),
+                    //   hintText: "Description",
+                    //   hintStyle:
+                    //       TextStyle(fontSize: 18.0, color: Colors.white),
+                  ),
+                ),
+              ),
+              ElevatedButton(
+                onPressed: null,
+                child: const Text(
+                  "Add",
+                  style: TextStyle(color: Colors.white),
+                ),
+                style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all<Color>(
+                        const Color(0xFF001133))),
+              )
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   final colorList = <Color>[
     const Color(0xFF001133),
     const Color(0xFFeeb714),
@@ -113,17 +179,9 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
+        //elevation: 4.0,
         onPressed: () {
-          showModalBottomSheet(
-            context: context,
-            builder: (BuildContext context) {
-              return Container(
-                height: MediaQuery.of(context).size.height / 2,
-                color: const Color(0xFF405173),
-                child: Column(),
-              );
-            },
-          );
+          _showModal();
         },
         child: const Icon(
           Icons.add,
