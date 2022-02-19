@@ -6,6 +6,9 @@ import 'dart:convert';
 import 'package:pie_chart/pie_chart.dart';
 import 'package:todo_app/Widgets/AppBar.dart';
 import 'package:todo_app/Widgets/TodoContainer.dart';
+import 'package:todo_app/Utils/HomeUtils.dart';
+
+HomeUtils homeUtilsFunction = HomeUtils();
 
 class HomeScreen extends StatefulWidget {
   HomeScreen({Key? key}) : super(key: key);
@@ -80,7 +83,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
               ElevatedButton(
-                onPressed: () => _postData(title: title, desc: desc),
+                onPressed: () {},
                 child: const Text(
                   "Add",
                   style: TextStyle(color: Colors.white),
@@ -101,70 +104,14 @@ class _HomeScreenState extends State<HomeScreen> {
     const Color(0xFFeeb714),
   ];
 
-  void fetchData() async {
-    try {
-      http.Response response = await http.get(Uri.parse(api));
-      var data = json.decode(response.body);
-      data.forEach((todo) {
-        Todo i = Todo(
-          id: todo['id'],
-          title: todo['title'],
-          desc: todo['desc'],
-          isDone: todo['isDone'],
-          date: todo['date'],
-        );
-        if (todo['isDone']) {
-          workDone += 1;
-        }
-        todoList.add(i);
-      });
-      //print(todoList.length);
-      setState(() {
-        isLoading = false;
-      });
-    } catch (e) {
-      print("Error is $e");
-    }
-  }
-
-  void _postData({String title = "", String desc = ""}) async {
-    try {
-      http.Response response = await http.post(
-        Uri.parse(api),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: jsonEncode(
-            <String, dynamic>{"title": title, "desc": desc, "isDone": false}),
-      );
-      if (response.statusCode == 201) {
-        setState(() {
-          todoList = [];
-        });
-        fetchData();
-      } else {
-        print("Something went wrong");
-      }
-    } catch (e) {
-      print("Error is $e");
-    }
-  }
-
-  void DeleteATodo(String id) async {
-    try {
-      http.Response response = await http.delete(Uri.parse(api + id));
-      setState(() {
-        todoList = [];
-      });
-      fetchData();
-    } catch (e) {
-      print("Error is $e");
-    }
-  }
-
   @override
   void initState() {
-    fetchData();
+    homeUtilsFunction.fetchData().then((value) {
+      setState(() {
+        todoList = value;
+        isLoading = false;
+      });
+    });
     super.initState();
   }
 
@@ -205,7 +152,8 @@ class _HomeScreenState extends State<HomeScreen> {
                             title: e.title,
                             desc: e.desc,
                             isDone: e.isDone,
-                            onPressDelete: () => DeleteATodo(e.id.toString()),
+                            onPressDelete: () =>
+                                homeUtilsFunction.DeleteATodo(e.id.toString()),
                           );
                         }).toList(),
                       ),
